@@ -1,0 +1,15 @@
+{% extends "base/base.html" %}
+
+{% block body %}
+	body :)
+	<ul>
+		{% for item in items %}
+			<li>{{ escape(item) }}</li>
+			<li>{{ item }}</li>
+		{% end %}
+	</ul>
+{% end %}
+
+{% block footer %}
+	footer :D
+{% end %}

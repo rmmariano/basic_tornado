@@ -1,3 +1,8 @@
+# Ignore all the files in venv, but do not ignore create_venv.sh and requirements.txt
+venv/*
+!venv/create_venv.sh
+!venv/requirements.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

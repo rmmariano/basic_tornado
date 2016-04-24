@@ -1,4 +1,4 @@
-import os.path as os_path
+from os.path import join, dirname
 
 from tornado.ioloop import IOLoop
 from tornado.httpserver import HTTPServer
@@ -6,26 +6,11 @@ from tornado.web import Application, RequestHandler
 from tornado.options import define, options, parse_command_line
 
 define("port", default=8888, help="run on the given port", type=int)
-define("debug", default=True, help="run in debug mode")
+define("debug", default=True, help="run in debug mode", type=bool)
 
-class HttpServerApplication(Application):
-    def __init__(self):
-        handlers = [
-            (r"/", MainHandler),
-            (r"/auth/login", AuthLoginHandler),
-            (r"/auth/logout", AuthLogoutHandler),
-        ]
-        settings = dict(
-            blog_title=u"Tornado Hello World",
-            template_path=os_path.join(os_path.dirname(__file__), "template"),
-            static_path=os_path.join(os_path.dirname(__file__), "static"),
-            xsrf_cookies=True,
-            cookie_secret="__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
-            login_url="/auth/login",
-            debug=options.debug,
-        )
-        Application.__init__(self, handlers, **settings)
-
+############################################################################
+################################# Handlers #################################
+############################################################################
 
 class MainHandler(RequestHandler):
     # @authenticated
@@ -60,18 +45,39 @@ class AuthLoginHandler(RequestHandler):
         #     self.render("login.html", error="incorrect password")
         pass
 
-
 class AuthLogoutHandler(RequestHandler):
     def get(self):
         # self.clear_cookie("blogdemo_user")
         # self.redirect(self.get_argument("next", "/"))
         pass
 
+############################################################################
+################################ Application ###############################
+############################################################################
+
+class HttpServerApplication(Application):
+    def __init__(self):
+        handlers = [
+            (r"/", MainHandler),
+            (r"/auth/login", AuthLoginHandler),
+            (r"/auth/logout", AuthLogoutHandler),
+        ]
+        settings = dict(
+            blog_title = u"Tornado Hello World",
+            template_path = join(dirname(__file__), "template"),
+            static_path = join(dirname(__file__), "static"),
+            xsrf_cookies = True,
+            cookie_secret = "__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
+            login_url = "/auth/login",
+            debug = options.debug,
+        )
+        Application.__init__(self, handlers, **settings)
 
 def main():
     parse_command_line()
     http_server = HTTPServer(HttpServerApplication())
     http_server.listen(options.port)
+    print("\nRunning Tornado on port "+str(options.port)+"\n")
     IOLoop.current().start()
 
 if __name__ == "__main__":
